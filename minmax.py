@@ -1,22 +1,42 @@
-def minimax(node, depth, maximizing_player):
-    if depth == 0 or game_over(node):
-        return evaluate(node)
-    
-    return max(
-        [minimax(child, depth - 1, False) for child in get_children(node)]
-    ) if maximizing_player else \
-        min(
-        [minimax(child, depth - 1, True) for child in get_children(node)]
-    )
+tree = {
+    'A': {
+        'B': {
+            'E': 3,
+            'F': 5
+        },
+        'C': {
+            'G': 6,
+            'H': 9
+        },
+        'D': {
+            'I': 1,
+            'J': 2
+        }
+    }
+}
 
-# Example usage:
-def game_over(node):
-    return node == 0
+def minimax(node, depth, is_maximizing_player):
+    if type(node) is int:
+        return node, str(node)
+    if is_maximizing_player:
+        best_value = -float('inf')
+        path = ""
+        for key, subtree in node.items():
+            value, subpath = minimax(subtree, depth + 1, False)
+            if value > best_value:
+                best_value = value
+                path = key + " -> " + subpath
+        return best_value, path
+    else:
+        best_value = float('inf')
+        path = ""
+        for key, subtree in node.items():
+            value, subpath = minimax(subtree, depth + 1, True)
+            if value < best_value:
+                best_value = value
+                path = key + " -> " + subpath
+        return best_value, path
 
-def evaluate(node):
-    return node
-
-def get_children(node):
-    return [node - 1, node - 2, node - 3]
-
-print(minimax(10, 3, True))
+optimal_cost, optimal_path = minimax(tree, 0, True)
+print(f"Optimal Cost: {optimal_cost}")
+print(f"Optimal Path: {optimal_path}")
